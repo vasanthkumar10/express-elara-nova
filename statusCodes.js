@@ -46,6 +46,9 @@
 
 // GET -> no body (query strings or params) + data are exposed on the URL
 // POST -> BODY + to create new data + (private calls)
-// PUT -> replace entire data(id)
+// PUT -> replace / update entire data(id)
 // DELETE -> delete the data from the server
 // PATCH -> partial update
+
+// Protocols -> rules
+// ReST -> Representational State Transfer
