@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const log = require("debug")("app:startup");
+const { validate } = require("../utils/validate");
 
 const cars = [
   { id: 1, name: "mercedez" },
@@ -22,13 +24,26 @@ router.get("/:id", (req, res) => {
   const { id } = req.params; // string
   const car = cars.find((data) => data.id === Number(id));
   if (!car) return res.status(404).send("Car id is not found");
+  log("Car data sent");
   return res.send(car);
 });
 
 router.post("/", (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).send("Name parameter is required...");
+  // if (!name) return res.status(400).send("Name parameter is required...");
 
+  // define schema
+  // const schema = Joi.object({
+  //   name: Joi.string().min(3).max(15).required(),
+  // });
+
+  // const result = schema.validate(req.body);
+  // if (result.error)
+  //   return res.status(400).send(result.error.details[0].message);
+
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const { name } = req.body;
   const newCar = {
     id: cars.length + 1,
     name,
@@ -39,9 +54,13 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).send("Name parameter is required...");
+  // const { name } = req.body;
+  // if (!name) return res.status(400).send("Name parameter is required...");
 
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const { name } = req.body;
   const { id } = req.params;
   const car = cars.find((data) => data.id === Number(id));
   if (!car) return res.status(404).send("Car data not found");
