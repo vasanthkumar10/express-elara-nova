@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const log = require("debug")("app:startup");
+const db = require("debug")("app:db");
 const { validate } = require("../utils/validate");
+const { deleteCar, createCar } = require("../controllers/carController");
 
 const cars = [
   { id: 1, name: "mercedez" },
@@ -11,6 +13,7 @@ const cars = [
 
 // static API
 router.get("/", (req, res) => {
+  log("Sending cars", cars);
   return res.send(cars);
 });
 
@@ -24,7 +27,8 @@ router.get("/:id", (req, res) => {
   const { id } = req.params; // string
   const car = cars.find((data) => data.id === Number(id));
   if (!car) return res.status(404).send("Car id is not found");
-  log("Car data sent");
+  log("Sending car with id", id);
+  db("Sending car with id", id);
   return res.send(car);
 });
 
@@ -69,15 +73,7 @@ router.put("/:id", (req, res) => {
   return res.status(200).send(car);
 });
 
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  const car = cars.find((data) => data.id === Number(id));
-  if (!car) return res.status(404).send("car data not found");
-
-  const index = cars.indexOf(car);
-  cars.splice(index, 1);
-
-  return res.status(200).send(car);
-});
+router.delete("/:id", deleteCar);
+// router.delete("/data/:id", deleteCar);
 
 module.exports = router;
