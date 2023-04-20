@@ -41,9 +41,11 @@ app.set("views", "./views");
 
 // custom middleware
 app.use(function authenticate(req, res, next) {
-  const { user_id } = req.headers;
-  if (user_id === "123") return res.status(403).send("Invalid user");
-  else next();
+  const { num } = req.query;
+  return res.status(200).send({
+    num,
+    isOdd: num % 2 !== 0,
+  });
 });
 
 // app.use(validateReq());

@@ -98,8 +98,38 @@ async function getBooks(id) {
   // const books = await Book.find({ author: /.*ow.*/i });
 
   // by id
-  const books = await Book.find({ _id: id });
+  const books = await Book.find({ _id: id }); // find returns array of objects
   console.log("books", books);
 }
 
-getBooks("64401b3cbd6732914bcdca95");
+// getBooks("64401b3cbd6732914bcdca95");
+
+// update books
+// find and update
+async function updateBooks(id) {
+  const book = await Book.findById(id);
+  // console.log("book to be updated", book);
+  if (!book) return;
+  // book.author = "K K Rowling";
+  // book.isPublished = false;
+
+  book.set({
+    author: "RR Rowling",
+    name: "Harry potter with the newspaper",
+  });
+
+  const updatedBook = await book.save();
+  console.log(`updated book -> ${updatedBook}`);
+}
+
+// updateBooks("64401b3cbd6732914bcdca95");
+
+// delete
+async function deleteBooks(id) {
+  // const deletedBook = await Book.findByIdAndDelete(id); // recommended
+  // const deletedBooks = await Book.deleteOne({ author: "vasanth" });
+  const deletedBooks = await Book.deleteMany({ author: "vasanth" });
+  console.log("Deleted book", deletedBooks);
+}
+
+deleteBooks("64401b3cbd6732914bcdca95");

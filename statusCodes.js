@@ -52,3 +52,18 @@
 
 // Protocols -> rules
 // ReST -> Representational State Transfer
+
+const axios = require("axios");
+
+async function createOrder() {
+  const result = await axios.post("http://localhost:5000/createOrder", {
+    customerName: "Adhi",
+    products: "Tennis ball",
+    price: 50,
+    quantity: 20,
+  });
+
+  console.log(result.data);
+}
+
+createOrder();

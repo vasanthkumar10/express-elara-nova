@@ -74,6 +74,6 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", deleteCar);
-// router.delete("/data/:id", deleteCar);
+router.delete("/data/:id", deleteCar);
 
 module.exports = router;
