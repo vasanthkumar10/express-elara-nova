@@ -11,9 +11,15 @@
 
 // mongodb -> ORM (Object Relational Mapper) -> mongoose (node js)
 
+const express = require("express");
 const mongoose = require("mongoose");
+const orders = require("../routes/order");
+const user = require("../routes/user");
+const auth = require("../routes/auth");
 
-// connection
+const app = express();
+
+// db connection
 mongoose
   .connect("mongodb://localhost:27017/playground") // db is not available, it'll create new DB
   .then(() => console.log("connected to MongoDB....."))
@@ -21,115 +27,125 @@ mongoose
     console.log("Error occured while connecting mongodb....", err)
   );
 
-// schema
-const bookSchema = new mongoose.Schema({
-  name: { type: String, required: true, minlength: 3, maxlength: 50 },
-  author: String,
-  genre: {
-    type: [String],
-    enum: ["finance", "fantasy", "thriller", "comedy", "horror"],
-  },
-  date: { type: Date, default: Date.now },
-  isPublished: Boolean,
-});
+// middleware
+app.use(express.json());
 
-// data types -> Number, String, Date, Array, ObjectId, Buffer
+app.use("/order", orders);
+app.use("/user", user);
+app.use("/auth", auth);
 
-// model creation
-const Book = mongoose.model("Book", bookSchema);
+// server connection
+app.listen(5000, () => console.log("server running on port 5000..."));
 
-async function createBook() {
-  const book = new Book({
-    name: "rich dad poor dad",
-    author: "robert kiyosaki",
-    genre: ["finance"],
-    isPublished: true,
-  });
+// // schema
+// const bookSchema = new mongoose.Schema({
+//   name: { type: String, required: true, minlength: 3, maxlength: 50 },
+//   author: String,
+//   genre: {
+//     type: [String],
+//     enum: ["finance", "fantasy", "thriller", "comedy", "horror"],
+//   },
+//   date: { type: Date, default: Date.now },
+//   isPublished: Boolean,
+// });
 
-  try {
-    const result = await book.save();
-    console.log(`Created a book with data - ${result}`);
-  } catch (err) {
-    console.log(`Error occured while creating book -> ${err}`);
-  }
-}
+// // data types -> Number, String, Date, Array, ObjectId, Buffer
 
-// createBook();
+// // model creation
+// const Book = mongoose.model("Book", bookSchema);
 
-// getAllBooks
-async function getAllBooks() {
-  const books = await Book.find();
-  console.log("Books", books);
-}
+// async function createBook() {
+//   const book = new Book({
+//     name: "rich dad poor dad",
+//     author: "robert kiyosaki",
+//     genre: ["finance"],
+//     isPublished: true,
+//   });
 
-// getAllBooks();
+//   try {
+//     const result = await book.save();
+//     console.log(`Created a book with data - ${result}`);
+//   } catch (err) {
+//     console.log(`Error occured while creating book -> ${err}`);
+//   }
+// }
 
-async function getBooks(id) {
-  // const books = await Book.find({
-  //   // author: "vasanth",
-  //   // isPublished: false,
-  //   // genre: "comedy",
-  // })
-  //   .sort({ name: -1 }) // +1 -> asc, -1 -> descending
-  //   // .select({ name: 1, author: 1 });
-  //   // .count();
-  //   .limit(3);
+// // createBook();
 
-  // // AND
-  // const books = await Book.find().and([
-  //   { name: "Harry Potter" },
-  //   { isPublished: true },
-  // ]);
+// // getAllBooks
+// async function getAllBooks() {
+//   const books = await Book.find();
+//   console.log("Books", books);
+// }
 
-  // OR
-  // const books = await Book.find().or([
-  //   { name: "Harry Potter" },
-  //   { isPublished: true },
-  // ]);
+// // getAllBooks();
 
-  // regular expressions (regex)
-  // starts -> /^pattern/
-  // const books = await Book.find({ author: /^vas/i });
+// async function getBooks(id) {
+//   // const books = await Book.find({
+//   //   // author: "vasanth",
+//   //   // isPublished: false,
+//   //   // genre: "comedy",
+//   // })
+//   //   .sort({ name: -1 }) // +1 -> asc, -1 -> descending
+//   //   // .select({ name: 1, author: 1 });
+//   //   // .count();
+//   //   .limit(3);
 
-  // // ends ->  /pattern$/
-  // const books = await Book.find({ author: /ling$/i });
+//   // // AND
+//   // const books = await Book.find().and([
+//   //   { name: "Harry Potter" },
+//   //   { isPublished: true },
+//   // ]);
 
-  // contains -> /.*pattern.*/
-  // const books = await Book.find({ author: /.*ow.*/i });
+//   // OR
+//   // const books = await Book.find().or([
+//   //   { name: "Harry Potter" },
+//   //   { isPublished: true },
+//   // ]);
 
-  // by id
-  const books = await Book.find({ _id: id }); // find returns array of objects
-  console.log("books", books);
-}
+//   // regular expressions (regex)
+//   // starts -> /^pattern/
+//   // const books = await Book.find({ author: /^vas/i });
 
-// getBooks("64401b3cbd6732914bcdca95");
+//   // // ends ->  /pattern$/
+//   // const books = await Book.find({ author: /ling$/i });
 
-// update books
-// find and update
-async function updateBooks(id) {
-  const book = await Book.findById(id);
-  // console.log("book to be updated", book);
-  if (!book) return;
-  // book.author = "K K Rowling";
-  // book.isPublished = false;
+//   // contains -> /.*pattern.*/
+//   // const books = await Book.find({ author: /.*ow.*/i });
 
-  book.set({
-    author: "RR Rowling",
-    name: "Harry potter with the newspaper",
-  });
+//   // by id
+//   const books = await Book.find({ _id: id }); // find returns array of objects
+//   console.log("books", books);
+// }
 
-  const updatedBook = await book.save();
-  console.log(`updated book -> ${updatedBook}`);
-}
+// // getBooks("64401b3cbd6732914bcdca95");
 
-// updateBooks("64401b3cbd6732914bcdca95");
+// // update books
+// // find and update
+// async function updateBooks(id) {
+//   const book = await Book.findById(id);
+//   // console.log("book to be updated", book);
+//   if (!book) return;
+//   // book.author = "K K Rowling";
+//   // book.isPublished = false;
 
-// delete
-async function deleteBooks(id) {
-  // const deletedBook = await Book.findByIdAndDelete(id); // recommended
-  // const deletedBooks = await Book.deleteOne({ author: "vasanth" });
-  const deletedBooks = await Book.deleteMany({ author: "vasanth" });
-  console.log("Deleted book", deletedBooks);
-}
+//   book.set({
+//     author: "RR Rowling",
+//     name: "Harry potter with the newspaper",
+//   });
 
-deleteBooks("64401b3cbd6732914bcdca95");
+//   const updatedBook = await book.save();
+//   console.log(`updated book -> ${updatedBook}`);
+// }
+
+// // updateBooks("64401b3cbd6732914bcdca95");
+
+// // delete
+// async function deleteBooks(id) {
+//   // const deletedBook = await Book.findByIdAndDelete(id); // recommended
+//   // const deletedBooks = await Book.deleteOne({ author: "vasanth" });
+//   const deletedBooks = await Book.deleteMany({ author: "vasanth" });
+//   console.log("Deleted book", deletedBooks);
+// }
+
+// deleteBooks("64401b3cbd6732914bcdca95");

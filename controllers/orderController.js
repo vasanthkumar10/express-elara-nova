@@ -1,30 +1,12 @@
-const express = require("express");
-const mongoose = require("mongoose");
+const { Order, validateOrder } = require("../models/order");
 const log = require("debug")("app:db");
 
-const app = express();
-app.use(express.json());
+async function createOrder(req, res) {
+  const { error } = validateOrder(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-mongoose
-  .connect("mongodb://localhost:27017/playground")
-  .then(() => console.log("Connected to the mongodb..."))
-  .catch((err) => console.log("Error occured while connecting mongodb", err));
-
-const orderSchema = new mongoose.Schema({
-  customerName: { type: String, required: true },
-  product: String,
-  price: Number,
-  quantity: Number,
-  date: { type: Date, default: Date.now },
-  totalPrice: Number,
-});
-
-// model
-const Order = mongoose.model("Order", orderSchema);
-
-app.post("/createOrder", async (req, res) => {
   const { customerName, product, price, quantity } = req.body;
-  log("Creating a new order");
+  console.log("Creating a new order", req);
 
   try {
     const order = new Order({
@@ -46,9 +28,9 @@ app.post("/createOrder", async (req, res) => {
       error: err.message,
     });
   }
-});
+}
 
-app.get("/getOrder", async (req, res) => {
+async function getOrder(req, res) {
   const { id } = req.query;
   try {
     const order = await Order.findById(id);
@@ -64,9 +46,9 @@ app.get("/getOrder", async (req, res) => {
       error: err.message,
     });
   }
-});
+}
 
-app.post("/updateOrder", async (req, res) => {
+async function updateOrder(req, res) {
   const { id, price } = req.body;
   try {
     const order = await Order.findById(id);
@@ -86,9 +68,9 @@ app.post("/updateOrder", async (req, res) => {
       error: err.message,
     });
   }
-});
+}
 
-app.delete("/deleteOrder", async (req, res) => {
+async function deleteOrder(req, res) {
   const { id } = req.body;
 
   try {
@@ -103,6 +85,11 @@ app.delete("/deleteOrder", async (req, res) => {
       error: err.message,
     });
   }
-});
+}
 
-app.listen(5000, () => console.log("Listening to the port 5000...."));
+module.exports = {
+  createOrder,
+  getOrder,
+  updateOrder,
+  deleteOrder,
+};
