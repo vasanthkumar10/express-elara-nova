@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false },
+  roles: {
+    type: String,
+    required: true,
+  },
 });
 
 // model
@@ -16,6 +21,7 @@ const validateUser = (user) => {
     name: Joi.string().required(),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
+    isAdmin: Joi.boolean().required(),
   });
 
   return schema.validate(user);

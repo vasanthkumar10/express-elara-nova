@@ -6,7 +6,6 @@ async function createOrder(req, res) {
   if (error) return res.status(400).send(error.details[0].message);
 
   const { customerName, product, price, quantity } = req.body;
-  console.log("Creating a new order", req);
 
   try {
     const order = new Order({
@@ -48,6 +47,21 @@ async function getOrder(req, res) {
   }
 }
 
+async function getOrders(req, res) {
+  try {
+    const orders = await Order.find();
+
+    return res.status(200).json({
+      data: orders,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      msg: "Something went wrong...",
+      error: err.message,
+    });
+  }
+}
+
 async function updateOrder(req, res) {
   const { id, price } = req.body;
   try {
@@ -73,7 +87,13 @@ async function updateOrder(req, res) {
 async function deleteOrder(req, res) {
   const { id } = req.body;
 
+  const { isAdmin } = req.user;
+  if (!isAdmin) return res.status(401).send("Unauthorised");
+
   try {
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).send("Order not found...");
+
     const deletedOrder = await Order.findByIdAndDelete(id);
     return res.status(200).json({
       msg: "Order deleted successfully",
@@ -90,6 +110,7 @@ async function deleteOrder(req, res) {
 module.exports = {
   createOrder,
   getOrder,
+  getOrders,
   updateOrder,
   deleteOrder,
 };

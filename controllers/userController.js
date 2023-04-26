@@ -1,4 +1,5 @@
 const { User, validateUser } = require("../models/user");
+const { generateToken } = require("../authentication/jwt");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -6,7 +7,7 @@ async function createUser(req, res) {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const { name, email, password } = req.body;
+  const { name, email, password, isAdmin } = req.body;
 
   //   check user existance
   let user = await User.findOne({ email });
@@ -14,7 +15,7 @@ async function createUser(req, res) {
 
   try {
     console.log("Creating new user....");
-    user = new User({ name, email, password });
+    user = new User({ name, email, password, isAdmin });
     console.log("before hashing user", user);
 
     // hash the password
@@ -26,10 +27,7 @@ async function createUser(req, res) {
     const newUser = await user.save();
 
     // JWT create token
-    const token = jwt.sign(
-      { _id: user._id, email: user.email },
-      "JWTPrivateKey"
-    );
+    const token = generateToken({ _id: user._id, email: user.email, isAdmin });
 
     return res.header("X-Auth-Token", token).status(201).send({
       name: newUser.name,

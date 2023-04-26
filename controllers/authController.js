@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
+const { generateToken } = require("../authentication/jwt");
 
 async function login(req, res) {
   const { error } = validate(req.body);
@@ -19,10 +20,11 @@ async function login(req, res) {
     if (!isValid) return res.status(400).send("Invalid email or password....");
 
     // JWT create token
-    const token = jwt.sign(
-      { _id: user._id, email: user.email },
-      "JWTPrivateKey"
-    );
+    const token = generateToken({
+      _id: user._id,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
 
     return res.header("X-Auth-Token", token).status(200).json({
       msg: "User logged in successfully",
