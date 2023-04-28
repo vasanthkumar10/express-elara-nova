@@ -156,37 +156,37 @@ app.listen(5000, () => console.log("server running on port 5000..."));
 // Trade off -> embedded or consistency
 // author_id in book table is referring the author table
 // Normalisation -> consistent and easy to update
-// cons -> slow process because of multiple calls to db
+// cons -> slow process of searching the data because of multiple calls to db
 // Book
-let book = {
-  id: 1,
-  name: "hidden secrets",
-  authorId: 1,
-  genre: "horror",
-  price: 400,
-};
+// let book = {
+//   id: 1,
+//   name: "hidden secrets",
+//   authorId: 1,
+//   genre: "horror",
+//   price: 400,
+// };
 
-// Author
-let author = {
-  id: 1,
-  name: "vasanth",
-  age: 20,
-  place: "chennai",
-  books: [1, 10, 13],
-};
+// // Author
+// let author = {
+//   id: 1,
+//   name: "vasanth",
+//   age: 20,
+//   place: "chennai",
+//   books: [1, 10, 13],
+// };
 
-// embedded documents
-// denormalisation -> high query performance
-// no consistency and updation is costly
-let book = {
-  id: 1,
-  name: "hidden secrets",
-  genre: "horror",
-  price: 400,
-  author: {
-    name: "vasanth",
-    age: 20,
-    place: "chennai",
-    books: [1, 10, 13],
-  },
-};
+// // embedded documents
+// // denormalisation -> high query performance
+// // no consistency and updation is costly
+// let book = {
+//   id: 1,
+//   name: "hidden secrets",
+//   genre: "horror",
+//   price: 400,
+//   author: {
+//     name: "vasanth",
+//     age: 20,
+//     place: "chennai",
+//     books: [1, 10, 13],
+//   },
+// };

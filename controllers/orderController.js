@@ -1,110 +1,82 @@
 const { Order, validateOrder } = require("../models/order");
-const log = require("debug")("app:db");
+const {
+  created,
+  clientError,
+  dataNotFound,
+  success,
+  unauthorised,
+} = require("../utils/response");
 
 async function createOrder(req, res) {
   const { error } = validateOrder(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return clientError(error.details[0].message);
 
   const { customerName, product, price, quantity } = req.body;
 
-  try {
-    const order = new Order({
-      customerName,
-      product,
-      price,
-      quantity,
-      totalPrice: quantity * price,
-    });
+  const order = new Order({
+    customerName,
+    product,
+    price,
+    quantity,
+    totalPrice: quantity * price,
+  });
 
-    const newOrder = await order.save();
-    return res.status(201).json({
-      msg: "Successfully created the order",
-      data: newOrder,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      msg: "Something went wrong...",
-      error: err.message,
-    });
-  }
+  const newOrder = await order.save();
+  return created({
+    msg: "Successfully created the order",
+    data: newOrder,
+  });
 }
 
 async function getOrder(req, res) {
   const { id } = req.query;
-  try {
-    const order = await Order.findById(id);
+  const order = await Order.findById(id);
 
-    if (!order) return res.status(404).send("Order not found...");
+  if (!order) return dataNotFound("Order not found...");
 
-    return res.status(200).json({
-      data: order,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      msg: "Something went wrong...",
-      error: err.message,
-    });
-  }
+  return success({
+    data: order,
+  });
 }
 
 async function getOrders(req, res) {
-  try {
-    const orders = await Order.find();
+  const orders = await Order.find();
 
-    return res.status(200).json({
-      data: orders,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      msg: "Something went wrong...",
-      error: err.message,
-    });
-  }
+  return success({
+    data: orders,
+  });
 }
 
 async function updateOrder(req, res) {
   const { id, price } = req.body;
-  try {
-    const order = await Order.findById(id);
-    if (!order) return res.status(404).send("Order not found...");
 
-    order.price = price;
-    order.totalPrice = price * order.quantity;
+  const order = await Order.findById(id);
+  if (!order) return dataNotFound("Order not found...");
 
-    const updatedOrder = await order.save();
-    return res.status(200).json({
-      msg: "Order updated successfully",
-      data: updatedOrder,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      msg: "Something went wrong...",
-      error: err.message,
-    });
-  }
+  order.price = price;
+  order.totalPrice = price * order.quantity;
+
+  const updatedOrder = await order.save();
+  return success({
+    msg: "Order updated successfully",
+    data: updatedOrder,
+  });
 }
 
 async function deleteOrder(req, res) {
   const { id } = req.body;
 
   const { isAdmin } = req.user;
-  if (!isAdmin) return res.status(401).send("Unauthorised");
+  if (!isAdmin) return unauthorised("Unauthorised");
 
-  try {
-    const order = await Order.findById(id);
-    if (!order) return res.status(404).send("Order not found...");
+  const order = await Order.findById(id);
+  if (!order) return dataNotFound("Order not found...");
 
-    const deletedOrder = await Order.findByIdAndDelete(id);
-    return res.status(200).json({
-      msg: "Order deleted successfully",
-      data: deletedOrder,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      msg: "Something went wrong...",
-      error: err.message,
-    });
-  }
+  const deletedOrder = await Order.findByIdAndDelete(id);
+  return success({
+    msg: "Order deleted successfully",
+    data: deletedOrder,
+  });
 }
 
 module.exports = {
