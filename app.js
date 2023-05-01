@@ -63,6 +63,10 @@ app.use("/cars", cars);
 //   next(); // req will go to next middleware
 // });
 
+require("dotenv").config();
+
+console.log("jwtkey", process.env.JWT_PRIVATE_KEY);
+
 app.listen(5000, () => console.log("Server is running on port 5000..."));
 
 // Nodemon -> Node monitor

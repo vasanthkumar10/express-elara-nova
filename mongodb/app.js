@@ -17,6 +17,9 @@ const orders = require("../routes/order");
 const user = require("../routes/user");
 const auth = require("../routes/auth");
 const cors = require("cors");
+require("dotenv").config({
+  path: "../.env",
+});
 
 const app = express();
 
@@ -28,7 +31,11 @@ mongoose
     console.log("Error occured while connecting mongodb....", err)
   );
 
-// middleware
+// process
+// console.log("process", process.env.NODE_ENV, app.get("env"));
+console.log("JWT key", process.env.JWT_PRIVATE_KEY);
+
+// middleware;
 app.use(express.json());
 
 app.use(cors());
@@ -127,21 +134,43 @@ app.listen(5000, () => console.log("server running on port 5000..."));
 // // find and update
 // async function updateBooks(id) {
 //   const book = await Book.findById(id);
-//   // console.log("book to be updated", book);
+//   // const result = await Book.updateMany(
+//   //   { isPublished: false },
+//   //   {
+//   //     $set: {
+//   //       name: "vasanth",
+//   //     },
+//   //   }
+//   // );
+
+//   // const book = await Book.findByIdAndUpdate(
+//   //   id,
+//   //   {
+//   //     $set: {
+//   //       name: "vasanthkumar updated",
+//   //     },
+//   //   },
+//   //   {
+//   //     new: true,
+//   //   }
+//   // );
+
+//   // findbyId and Update -> returns original data
+//   console.log("book to be updated", book);
 //   if (!book) return;
 //   // book.author = "K K Rowling";
 //   // book.isPublished = false;
 
+//   if (book.genre.includes("comedy")) return;
 //   book.set({
 //     author: "RR Rowling",
 //     name: "Harry potter with the newspaper",
 //   });
-
 //   const updatedBook = await book.save();
 //   console.log(`updated book -> ${updatedBook}`);
 // }
 
-// // updateBooks("64401b3cbd6732914bcdca95");
+// updateBooks("64401bfabe8a3ce4896f320a");
 
 // // delete
 // async function deleteBooks(id) {
