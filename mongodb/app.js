@@ -25,7 +25,7 @@ const app = express();
 
 // db connection
 mongoose
-  .connect("mongodb://localhost:27017/playground") // db is not available, it'll create new DB
+  .connect(process.env.MONGO_CONNECTION_STRING) // db is not available, it'll create new DB
   .then(() => console.log("connected to MongoDB....."))
   .catch((err) =>
     console.log("Error occured while connecting mongodb....", err)

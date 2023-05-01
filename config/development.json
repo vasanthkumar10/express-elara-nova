@@ -1,0 +1,8 @@
+{
+  "name": "development",
+  "port": 5000,
+  "mail": {
+    "host": "vasizebron10@gmail.com",
+    "password": 1234
+  }
+}

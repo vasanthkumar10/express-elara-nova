@@ -4,6 +4,7 @@ const express = require("express");
 const morgan = require("morgan");
 
 const cars = require("./routes/cars");
+const config = require("config");
 
 const app = express();
 
@@ -65,9 +66,15 @@ app.use("/cars", cars);
 
 require("dotenv").config();
 
-console.log("jwtkey", process.env.JWT_PRIVATE_KEY);
+console.log("env", app.get("env"));
 
-app.listen(5000, () => console.log("Server is running on port 5000..."));
+console.log("config", config);
+
+const PORT = config.get("port");
+
+console.log("mail", config.get("mail.host"), config.get("mail.password"));
+
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}...`));
 
 // Nodemon -> Node monitor
 // nodemon app.js
